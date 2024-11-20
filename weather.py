@@ -3,14 +3,19 @@ import requests
 import base64
 from datetime import datetime
 
+# Function to convert kelvin to fahrenheit
 def kelvin_to_fahrenheit(temp):
     return f"{((9/5) * (temp - 273.15) + 32):.2f}"
 
+# Function to call the weather API with city and show the results
 def get_weather(city):
+
+    # Decrypting the base64 encrypted key for security. 
+    # Ideally a more complex encryption algorithm with an encryption key as env variable will be used.
     ak = base64.b64decode(b"ODM0ZDQyY2UzZjEzZGM3ZGRiNTQyYzBkZGVhNjNiYzk=").decode("ascii")
     url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={ak}"
     response = requests.get(url)
-    response = response.json()
+    response = response.json() # convert response to json
 
     print("---------------------------------")
     print(f"Weather in {city.capitalize()}")
@@ -26,32 +31,40 @@ def get_weather(city):
     print(f"- Sunset: {datetime.fromtimestamp(response['sys']['sunset']).strftime('%I:%M %p')}")
     print()
     
+# Function to add the city to favorites
 def add_fav(city):
+    
+    # Checking if valid input is provided for the city
     if len(city)==0:
         print("City name is empty")
         return
-
+    
+    # Add the city to favorites if city is not already present in the list and list length is less than 0
     if len(favorites)<3 and city not in favorites:
         favorites.append(city)
         print(f"{city} added to favorites.\n")
     else:
         print(f"favorites is full or city already in favorites.\n")
 
+# Function to remove the city from favorites
 def remove_fav(city):
+    # Prompting user nothing to remove if favorites is already empty
     if len(favorites)==0:
         print("Favorites is empty.\n")
         return
-    
+    # Checking if valid input is provided for the city
     if len(city)==0:
         print("City name is empty")
         return
 
+    # Checking if the city name is present in the favorites before removing
     if city in favorites:
         favorites.remove(city)
         print(f"{city} removed from favorites.\n")
     else:
         print(f"{city} not in favorites.\n")
         
+# This function loops through the favourites list and prints the city names
 def print_fav():
     if len(favorites)>0:
         for i, city in enumerate(favorites):
@@ -77,6 +90,7 @@ favorites = []
 if __name__=="__main__":
     print(instructions)
 
+    # Loop to keep the session active until the user terminates the session
     while True:
         cmd_input = input("Enter your input: ")
         cmd_input = cmd_input.lower()
